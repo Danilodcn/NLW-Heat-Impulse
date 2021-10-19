@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import { CreateMessageService } from "../services/CreateMessageService";
 
-interface IRequestWithUserID extends Request {
-  user_id: string;
-}
+import { IRequestWithUserID } from "../@types/express";
+
 
 class CreateMessageController {
-  async handler(request: IRequestWithUserID, response: Response) {
+  async handle(request: IRequestWithUserID, response: Response) {
     const message: string = request.body.message;
     const user_id = request.user_id;
     const service = new CreateMessageService();
