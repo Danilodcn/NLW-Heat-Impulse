@@ -25,10 +25,12 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
+const TOKEN_STORAGE = "@dowhile:token";
+
 export function AuthProvider(props: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
 
-  const signInUrl = `https://github.com/login/oauth/authorize?scope=user&client_id=93ff3dc9464f0bec9894`; //&redirect_uri=https://localhost:3000`
+  const signInUrl = `https://github.com/login/oauth/authorize?scope=user&client_id=ca7898374c64a3644a1f`; //&redirect_uri=https://localhost:3000`
 
   async function signIn(githubCode: string) {
     const response = await api.post<AuthResponse>("authenticate", {
@@ -36,7 +38,7 @@ export function AuthProvider(props: AuthProviderProps) {
     });
 
     const { token, user } = response.data;
-    localStorage.setItem("@dowhile:token", token);
+    localStorage.setItem(TOKEN_STORAGE, token);
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
     setUser(user);
@@ -44,11 +46,11 @@ export function AuthProvider(props: AuthProviderProps) {
 
   function signOut() {
     setUser(null);
-    localStorage.removeItem("@dowhile:token");
+    localStorage.removeItem(TOKEN_STORAGE);
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("@dowhile:token");
+    const token = localStorage.getItem(TOKEN_STORAGE);
 
     if (token) {
       // const header = { Authorization: `Bearer ${token}` };
@@ -60,8 +62,8 @@ export function AuthProvider(props: AuthProviderProps) {
       //   O Diego fez dessa maneira
 
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
-      api.get("profile").then((response) => {
-        console.log(response);
+      api.get<User>("profile").then((response) => {
+        setUser(response.data);
       });
     }
   }, []);

@@ -41,7 +41,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   const CLIENT_ID = "ca7898374c64a3644a1f";
   const SCOPE = "read:user";
-  const USER_STORAGE = "@nlwheat:token";
+  const USER_STORAGE = "@nlwheat:user";
   const TOKEN_STORAGE = "@nlwheat:token";
 
   async function signIn() {
@@ -61,12 +61,14 @@ function AuthProvider({ children }: AuthProviderProps) {
           code: authSessionResponse.params.code,
         });
         const { token, user } = authResponse.data as AuthResponse;
-        console.log("token", { token, user });
+        // console.log("token", { token, user });
 
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         // console.log(token);
-        await AsyncStorage.setItem(TOKEN_STORAGE, JSON.stringify(token));
+        await AsyncStorage.setItem(TOKEN_STORAGE, token);
         await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user));
+        // console.log("token: ", token);
+
         setUser(user);
       }
     } catch (err) {
@@ -80,7 +82,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     async function loadUserStorageData() {
       const userStorage = await AsyncStorage.getItem(USER_STORAGE);
       const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
-
+      // console.log("storage: ", tokenStorage);
       if (userStorage && tokenStorage) {
         api.defaults.headers.common["Authorization"] = `Bearer ${tokenStorage}`;
         setUser(JSON.parse(userStorage));
