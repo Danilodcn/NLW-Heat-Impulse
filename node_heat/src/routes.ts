@@ -17,4 +17,11 @@ router.post(
 
 router.get("/messages/last3", new GetLast3MessageController().handle);
 router.get("/profile", ensureAuthenticated,new ProfileUserController().handle);
+
+router.get("/facebook", (request, response) => {
+  
+  response.redirect("")
+})
+
+
 export { router };
